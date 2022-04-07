@@ -1,0 +1,6 @@
+
+library(httr)
+library("rjson")
+json_data <- fromJSON(file="requestBody.json")
+r <- PUT("https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}?api-version=2021-04-01",body=json_data,encode="json")
+content(r,"text")

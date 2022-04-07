@@ -38,6 +38,7 @@ module.exports = async (spec, singleOperation = '') => {
     operationOutput.pythonSnippet = getPythonRequestCode(operation, requestURL, hasBody);
     operationOutput.csharpSnippet = getCSharpRequestCode(operation, requestURL, hasBody);
     operationOutput.phpSnippet = getPhpRequestCode(operation, requestURL, hasBody);
+    operationOutput.RlangSnippet = getRlangRequestCode(operation, requestURL, hasBody);
 
     if (hasBody) {
       operationOutput.requestBody = getJSONRequestBody(
@@ -172,6 +173,22 @@ echo $response;
 
 ?>`;
 }
+
+function getRlangRequestCode({ operationId, operationType }, requestURL, hasBody) {
+  let paranameMap = {"get": "query", "put":"body","post":"body", "delete":"body","patch":"body"}
+  let paraname = operationType in paranameMap ? paranameMap[operationType.toLowerCase()] : "body";
+
+  return `
+library(httr)
+library("rjson")
+json_data <- fromJSON(file="requestBody.json")
+r <- ${(
+    operationType.toUpperCase()
+  )}("${requestURL}",${paraname}=json_data,encode="json")
+content(r,"text")
+`;
+}
+
 
 // JSON request body generator
 function getJSONRequestBody(properties, key = '') {
